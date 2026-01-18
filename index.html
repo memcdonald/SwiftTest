@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SpinBite - Decide Where to Eat</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-content">
+        <p class="pill">Stress-free meal decisions</p>
+        <h1>SpinBite</h1>
+        <p class="hero-subtitle">
+          A playful roulette wheel that matches your cravings and nearby options so
+          you can eat fast and worry less.
+        </p>
+        <div class="hero-actions">
+          <button class="primary" id="spinNow">Spin now</button>
+          <button class="ghost" id="locateMe">Use my location</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="wheel-wrapper">
+          <canvas id="wheel" width="320" height="320" aria-label="Roulette wheel"></canvas>
+          <div class="wheel-pointer"></div>
+        </div>
+        <div class="spin-result">
+          <h3 id="resultName">Ready to spin?</h3>
+          <p id="resultMeta">Your match appears here.</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel quick-start">
+        <div class="panel-heading">
+          <h2>Quick start</h2>
+          <p>Follow these two steps to see the roulette and matches update.</p>
+        </div>
+        <ol class="steps">
+          <li>Fill out your profile and tap <strong>Save profile</strong>.</li>
+          <li>Hit <strong>Spin now</strong> to pick a restaurant.</li>
+        </ol>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Profile &amp; Preferences</h2>
+          <p>Set your tastes so SpinBite knows what to look for.</p>
+        </div>
+        <form id="profileForm" class="grid">
+          <label>
+            Display name
+            <input type="text" name="displayName" placeholder="e.g. Jordan" required />
+          </label>
+          <label>
+            Dietary preference
+            <select name="diet">
+              <option value="omnivore">Omnivore</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="gluten-free">Gluten free</option>
+            </select>
+          </label>
+          <label>
+            Budget
+            <select name="budget">
+              <option value="$">$</option>
+              <option value="$$">$$</option>
+              <option value="$$$">$$$</option>
+            </select>
+          </label>
+          <label>
+            Cuisine cravings
+            <input type="text" name="cuisines" placeholder="Tacos, Sushi, Mediterranean" />
+          </label>
+          <label>
+            Time window
+            <select name="timeWindow">
+              <option value="now">Available now</option>
+              <option value="30">Within 30 minutes</option>
+              <option value="60">Within an hour</option>
+            </select>
+          </label>
+          <label>
+            Location
+            <input type="text" name="location" placeholder="Neighborhood or city" />
+          </label>
+          <label>
+            Zip code
+            <input type="text" name="zipCode" placeholder="e.g. 94103" inputmode="numeric" />
+          </label>
+          <div class="form-actions full">
+            <button type="submit" class="primary">Save profile</button>
+            <button type="button" class="ghost" id="sampleProfile">Use sample profile</button>
+            <button type="button" class="ghost" id="fetchRestaurants">Find nearby restaurants</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Link Partner Profiles</h2>
+          <p>Stay fair by tracking who spun last and take turns.</p>
+        </div>
+        <form id="partnerForm" class="grid two">
+          <label>
+            Partner name
+            <input type="text" name="partnerName" placeholder="Alex" required />
+          </label>
+          <label>
+            Partner email
+            <input type="email" name="partnerEmail" placeholder="alex@email.com" required />
+          </label>
+          <button type="submit" class="ghost full">Link partner</button>
+        </form>
+        <div class="partner-status" id="partnerStatus"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Nearby Restaurants (Immediate Availability)</h2>
+          <p>Based on your preferences and location.</p>
+        </div>
+        <p class="restaurant-status" id="restaurantStatus">Use a zip code to load real nearby restaurants.</p>
+        <div class="restaurant-list" id="restaurantList"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <h3>SpinBite POC</h3>
+        <p>Web-first experience built to transition cleanly to iPhone.</p>
+      </div>
+      <div class="footer-note">
+        <p>Tip: Save to your phone home screen for an app-like feel.</p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
