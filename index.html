@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SpinBite - Decide Where to Eat</title>
+    <title>AI + Data Governance Content Engine (Zapier)</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,135 +15,805 @@
   <body>
     <header class="hero">
       <div class="hero-content">
-        <p class="pill">Stress-free meal decisions</p>
-        <h1>SpinBite</h1>
+        <p class="eyebrow">Version 2.0 · 2026-01-26 · thesisstrategy.com</p>
+        <h1>AI + Data Governance Content Engine (Zapier)</h1>
         <p class="hero-subtitle">
-          A playful roulette wheel that matches your cravings and nearby options so
-          you can eat fast and worry less.
+          0 to 1 Build Guide: Mining Topics, Generating Content, Scheduling, Approvals, Publishing
+          (LinkedIn + WordPress + Substack Assist)
         </p>
-        <div class="hero-actions">
-          <button class="primary" id="spinNow">Spin now</button>
-          <button class="ghost" id="locateMe">Use my location</button>
+        <div class="tag-row">
+          <span>Zapier Tables</span>
+          <span>WordPress REST API</span>
+          <span>LinkedIn Publishing</span>
+          <span>Substack Assist</span>
         </div>
       </div>
       <div class="hero-card">
-        <div class="wheel-wrapper">
-          <canvas id="wheel" width="320" height="320" aria-label="Roulette wheel"></canvas>
-          <div class="wheel-pointer"></div>
-        </div>
-        <div class="spin-result">
-          <h3 id="resultName">Ready to spin?</h3>
-          <p id="resultMeta">Your match appears here.</p>
-        </div>
+        <h2>What you are building</h2>
+        <p>
+          A mostly automatic content operations system that pulls AI and data governance news, mines
+          it into topic ideas, generates drafts for multiple channels, routes drafts through
+          approvals, publishes automatically where possible, and tracks status to avoid duplication.
+        </p>
+        <ul>
+          <li><strong>LinkedIn:</strong> automated publishing via Zapier.</li>
+          <li><strong>WordPress:</strong> automated draft creation + scheduled publish.</li>
+          <li><strong>Substack:</strong> draft assist + reminders + RSS verification.</li>
+        </ul>
       </div>
     </header>
 
     <main>
-      <section class="panel quick-start">
+      <section class="panel" id="process-flow">
         <div class="panel-heading">
-          <h2>Quick start</h2>
-          <p>Follow these two steps to see the roulette and matches update.</p>
+          <h2>2. Process flow diagram</h2>
+          <p>Use this diagram while following the numbered steps in this guide.</p>
         </div>
-        <ol class="steps">
-          <li>Fill out your profile and tap <strong>Save profile</strong>.</li>
-          <li>Hit <strong>Spin now</strong> to pick a restaurant.</li>
-        </ol>
+        <figure class="diagram">
+          <div class="diagram-box">Figure 1. End-to-end process flow and the Zaps that implement each stage.</div>
+        </figure>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="tools">
         <div class="panel-heading">
-          <h2>Profile &amp; Preferences</h2>
-          <p>Set your tastes so SpinBite knows what to look for.</p>
+          <h2>3. Tools you will use</h2>
         </div>
-        <form id="profileForm" class="grid">
-          <label>
-            Display name
-            <input type="text" name="displayName" placeholder="e.g. Jordan" required />
-          </label>
-          <label>
-            Dietary preference
-            <select name="diet">
-              <option value="omnivore">Omnivore</option>
-              <option value="vegetarian">Vegetarian</option>
-              <option value="vegan">Vegan</option>
-              <option value="gluten-free">Gluten free</option>
-            </select>
-          </label>
-          <label>
-            Budget
-            <select name="budget">
-              <option value="$">$</option>
-              <option value="$$">$$</option>
-              <option value="$$$">$$$</option>
-            </select>
-          </label>
-          <label>
-            Cuisine cravings
-            <input type="text" name="cuisines" placeholder="Tacos, Sushi, Mediterranean" />
-          </label>
-          <label>
-            Time window
-            <select name="timeWindow">
-              <option value="now">Available now</option>
-              <option value="30">Within 30 minutes</option>
-              <option value="60">Within an hour</option>
-            </select>
-          </label>
-          <label>
-            Location
-            <input type="text" name="location" placeholder="Neighborhood or city" />
-          </label>
-          <label>
-            Zip code
-            <input type="text" name="zipCode" placeholder="e.g. 94103" inputmode="numeric" />
-          </label>
-          <div class="form-actions full">
-            <button type="submit" class="primary">Save profile</button>
-            <button type="button" class="ghost" id="sampleProfile">Use sample profile</button>
-            <button type="button" class="ghost" id="fetchRestaurants">Find nearby restaurants</button>
+        <ul class="checklist">
+          <li>Zapier Tables (database + triggers)</li>
+          <li>Zapier Forms (approvals without database access)</li>
+          <li>Schedule by Zapier (time-based dispatchers)</li>
+          <li>RSS by Zapier (news ingestion, Substack verification)</li>
+          <li>Webhooks by Zapier (WordPress REST API)</li>
+          <li>Code by Zapier (hashing, parsing, filtering)</li>
+          <li>LinkedIn by Zapier (publish posts)</li>
+          <li>ChatGPT / OpenAI steps (scoring, mining, generation)</li>
+          <li>Google Docs (optional draft editing)</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="word-counts">
+        <div class="panel-heading">
+          <h2>4. Standard word counts</h2>
+          <p>These constraints keep output consistent and predictable on the calendar.</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Target</th>
+              <th>Allowed range</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>LinkedIn</td>
+              <td>200 words</td>
+              <td>180 to 230</td>
+            </tr>
+            <tr>
+              <td>Substack</td>
+              <td>800 words</td>
+              <td>700 to 900</td>
+            </tr>
+            <tr>
+              <td>WordPress (pillar)</td>
+              <td>1300 words</td>
+              <td>1100 to 1500</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="security">
+        <div class="panel-heading">
+          <h2>5. Security rules (read this before you build)</h2>
+        </div>
+        <ul class="warning">
+          <li>Do not store passwords or API keys inside Zapier Tables, Google Docs, or Word docs.</li>
+          <li>Use a dedicated WordPress automation user (role: Editor) and an Application Password.</li>
+          <li>If credentials leak, revoke and recreate immediately.</li>
+          <li>Keep <code>Settings.publishing_enabled</code> OFF until tests pass end-to-end.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="prerequisites">
+        <div class="panel-heading">
+          <h2>6. Prerequisites (accounts and one-time setup)</h2>
+        </div>
+        <div class="split">
+          <div>
+            <h3>6.1 Accounts you need</h3>
+            <ul>
+              <li>Zapier account (paid plan or trial for multi-step Zaps).</li>
+              <li>LinkedIn account with publishing access.</li>
+              <li>WordPress admin access to thesisstrategy.com (self hosted).</li>
+              <li>Substack account (manual publish).</li>
+              <li>Optional: Google Docs and Slack.</li>
+            </ul>
           </div>
-        </form>
+          <div>
+            <h3>6.2 Set your Zapier timezone</h3>
+            <p>In Zapier: Settings → Profile → Timezone. Set it before building dispatchers.</p>
+          </div>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="wordpress-setup">
         <div class="panel-heading">
-          <h2>Link Partner Profiles</h2>
-          <p>Stay fair by tracking who spun last and take turns.</p>
+          <h2>7. WordPress setup for thesisstrategy.com (one-time)</h2>
         </div>
-        <form id="partnerForm" class="grid two">
-          <label>
-            Partner name
-            <input type="text" name="partnerName" placeholder="Alex" required />
-          </label>
-          <label>
-            Partner email
-            <input type="email" name="partnerEmail" placeholder="alex@email.com" required />
-          </label>
-          <button type="submit" class="ghost full">Link partner</button>
-        </form>
-        <div class="partner-status" id="partnerStatus"></div>
+        <ol>
+          <li>
+            <strong>Confirm the REST API is reachable.</strong> Open
+            <code>https://thesisstrategy.com/wp-json/</code> and confirm JSON returns.
+          </li>
+          <li>
+            <strong>Create a dedicated automation user.</strong> Users → Add New → username
+            <code>zapier_publisher</code> (role: Editor).
+          </li>
+          <li>
+            <strong>Create an Application Password.</strong> Name it “Zapier Publishing”, store it in a password manager.
+          </li>
+          <li>
+            <strong>Test authentication.</strong>
+            <pre><code>curl --user "zapier_publisher:YOUR_APP_PASSWORD" "https://thesisstrategy.com/wp-json/wp/v2/users/me?context=edit"</code></pre>
+          </li>
+        </ol>
+        <div class="callout">
+          <h4>If it fails, check:</h4>
+          <ul>
+            <li>Security plugins or WAF rules blocking <code>wp-json</code> or Basic Auth.</li>
+            <li>Site reachability from Zapier.</li>
+            <li>Permalink configuration issues.</li>
+          </ul>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="tables">
         <div class="panel-heading">
-          <h2>Nearby Restaurants (Immediate Availability)</h2>
-          <p>Based on your preferences and location.</p>
+          <h2>8. Build your database in Zapier Tables (Phase 1)</h2>
+          <p>Create these tables: Settings, News_Inbox, Topics, Content_Assets, Calendar_Slots. Approval_Log is recommended.</p>
         </div>
-        <p class="restaurant-status" id="restaurantStatus">Use a zip code to load real nearby restaurants.</p>
-        <div class="restaurant-list" id="restaurantList"></div>
+
+        <h3>8.1 Settings table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>publishing_enabled</td><td>Checkbox. Global kill switch. Keep OFF during testing.</td></tr>
+            <tr><td>wordpress_enabled</td><td>Checkbox. Allows WordPress actions to run.</td></tr>
+            <tr><td>test_mode</td><td>Checkbox. Optional dry-run behavior.</td></tr>
+            <tr><td>wordpress_base_url</td><td>Short text. Example: https://thesisstrategy.com</td></tr>
+            <tr><td>default_wordcount_linkedin_min</td><td>Number. 180</td></tr>
+            <tr><td>default_wordcount_linkedin_max</td><td>Number. 230</td></tr>
+            <tr><td>default_wordcount_substack_min</td><td>Number. 700</td></tr>
+            <tr><td>default_wordcount_substack_max</td><td>Number. 900</td></tr>
+            <tr><td>default_wordcount_wordpress_min</td><td>Number. 1100</td></tr>
+            <tr><td>default_wordcount_wordpress_max</td><td>Number. 1500</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.2 News_Inbox table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>news_title</td><td>Short text</td></tr>
+            <tr><td>news_url</td><td>URL (used for dedup)</td></tr>
+            <tr><td>source_name</td><td>Short text</td></tr>
+            <tr><td>published_at</td><td>Date/time</td></tr>
+            <tr><td>captured_at</td><td>Date/time</td></tr>
+            <tr><td>ai_summary</td><td>Long text</td></tr>
+            <tr><td>topics_tags</td><td>Text or multi-select</td></tr>
+            <tr><td>relevance_score</td><td>Number 1-5</td></tr>
+            <tr><td>used_for_topic</td><td>Checkbox</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.3 Topics table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>topic_title</td><td>Short text</td></tr>
+            <tr><td>topic_angle</td><td>Long text (your point of view)</td></tr>
+            <tr><td>why_now</td><td>Long text (what changed recently)</td></tr>
+            <tr><td>source_urls</td><td>Long text (one URL per line)</td></tr>
+            <tr><td>keywords</td><td>Text or multi-select</td></tr>
+            <tr><td>dedup_key</td><td>Short text (slug-like, unique)</td></tr>
+            <tr><td>topic_status</td><td>Dropdown: Proposed, Approved, Drafting, Drafted, Archived</td></tr>
+            <tr><td>created_at</td><td>Date/time</td></tr>
+            <tr><td>generate_drafts_button</td><td>Button field (optional)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.4 Content_Assets table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>asset_id</td><td>Short text (LI-0001, SS-0001, WP-0001)</td></tr>
+            <tr><td>topic_dedup_key</td><td>Short text (links back to the topic)</td></tr>
+            <tr><td>channel</td><td>Dropdown: LinkedIn, Substack, WordPress</td></tr>
+            <tr><td>title</td><td>Short text</td></tr>
+            <tr><td>body</td><td>Long text (LI plain text; Substack Markdown; WP HTML)</td></tr>
+            <tr><td>word_count</td><td>Number</td></tr>
+            <tr><td>content_hash</td><td>Short text (sha256 of body)</td></tr>
+            <tr><td>status</td><td>Dropdown: Draft, In Review, Changes Requested, Approved, Scheduled, Published, Blocked Duplicate</td></tr>
+            <tr><td>scheduled_datetime</td><td>Date/time</td></tr>
+            <tr><td>calendar_slot_id</td><td>Short text</td></tr>
+            <tr><td>published_url</td><td>URL</td></tr>
+            <tr><td>review_notes</td><td>Long text</td></tr>
+            <tr><td>submit_for_review_button</td><td>Button field</td></tr>
+            <tr><td>google_doc_url</td><td>URL (optional)</td></tr>
+            <tr><td>wp_post_id</td><td>Number (WordPress only)</td></tr>
+            <tr><td>wp_post_url</td><td>URL (WordPress only)</td></tr>
+            <tr><td>wp_edit_url</td><td>URL (WordPress only)</td></tr>
+            <tr><td>wp_slug</td><td>Short text</td></tr>
+            <tr><td>wp_excerpt</td><td>Long text</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.5 Calendar_Slots table</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>slot_id</td><td>Short text. Example: LI-2026-01-20-0900</td></tr>
+            <tr><td>channel</td><td>Dropdown: LinkedIn, Substack, WordPress</td></tr>
+            <tr><td>scheduled_datetime</td><td>Date/time</td></tr>
+            <tr><td>slot_status</td><td>Dropdown: Available, Reserved, Published, Skipped</td></tr>
+            <tr><td>asset_id</td><td>Short text</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.6 Approval_Log table (recommended)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type / Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>asset_id</td><td>Short text</td></tr>
+            <tr><td>decision</td><td>Dropdown: Approved, Changes Requested, Rejected</td></tr>
+            <tr><td>comments</td><td>Long text</td></tr>
+            <tr><td>decided_by</td><td>Short text</td></tr>
+            <tr><td>decided_at</td><td>Date/time</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="calendar-slots">
+        <div class="panel-heading">
+          <h2>9. Populate Calendar_Slots (Phase 2)</h2>
+        </div>
+        <p>Populate 8–12 weeks of slots ahead of time so scheduling is mechanical.</p>
+        <ul>
+          <li>LinkedIn: Tuesdays 09:00</li>
+          <li>WordPress: Thursdays 09:00</li>
+          <li>Substack: Saturdays 09:00</li>
+        </ul>
+        <p class="tip">Tip: Create a CSV and import it into Calendar_Slots. Keep <code>slot_status</code> = Available.</p>
+      </section>
+
+      <section class="panel" id="forms">
+        <div class="panel-heading">
+          <h2>10. Create Zapier Forms (Phase 3)</h2>
+        </div>
+        <div class="split">
+          <div>
+            <h3>10.1 Content Approval form</h3>
+            <ul>
+              <li>asset_id (Short text)</li>
+              <li>decision (Dropdown: Approved, Changes Requested)</li>
+              <li>comments (Long text)</li>
+              <li>decided_by (Short text)</li>
+            </ul>
+            <p>Connect the form to create a record in Approval_Log.</p>
+          </div>
+          <div>
+            <h3>10.2 Optional: Topic Intake form</h3>
+            <p>Create a “Topic Intake” form that creates Proposed topics in Topics.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="zaps">
+        <div class="panel-heading">
+          <h2>11. Build the automation Zaps (Phase 4)</h2>
+          <p>Build these in order. Keep <code>Settings.publishing_enabled</code> OFF until Phase 7.</p>
+        </div>
+
+        <article class="zap">
+          <h3>11.1 ZAP A: RSS → News_Inbox (dedup + AI score)</h3>
+          <p><strong>Purpose:</strong> ingest headlines without duplicates and score governance relevance.</p>
+          <ol>
+            <li>Tables: Find Record in News_Inbox where news_url = RSS item link.</li>
+            <li>Filter: Continue only if no record is found.</li>
+            <li>AI step: produce JSON with summary, tags, relevance_score.</li>
+            <li>Code by Zapier: parse JSON safely (optional).</li>
+            <li>Tables: Create Record in News_Inbox, set used_for_topic = unchecked.</li>
+          </ol>
+          <h4>AI prompt template</h4>
+          <pre><code>Return ONLY valid JSON with keys: summary, tags, relevance_score.
+summary: max 2 sentences.
+tags: 3-6 short tags.
+relevance_score: integer 1-5 (5 = urgent enterprise governance impact).
+
+Title: {{title}}
+Snippet: {{content}}
+URL: {{link}}</code></pre>
+          <h4>Optional JSON parse helper (Code by Zapier)</h4>
+          <pre><code>let parsed = {};
+try { parsed = JSON.parse(inputData.raw || "{}"); } catch (e) { parsed = {}; }
+return {
+  summary: parsed.summary || "",
+  tags: Array.isArray(parsed.tags) ? parsed.tags.join(", ") : (parsed.tags || ""),
+  score: Number(parsed.relevance_score || 3)
+};</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.2 ZAP B: High-signal News → Create Topic</h3>
+          <p><strong>Purpose:</strong> automatically turn important news items into Proposed topics.</p>
+          <ol>
+            <li>Trigger: New Record in News_Inbox.</li>
+            <li>Filter: relevance_score ≥ 4 AND used_for_topic unchecked.</li>
+            <li>AI step: generate one topic object.</li>
+            <li>Tables: Find record in Topics where dedup_key matches.</li>
+            <li>Filter: continue only if NOT found.</li>
+            <li>Tables: Create Topic with topic_status = Proposed.</li>
+            <li>Tables: Update News_Inbox used_for_topic = checked.</li>
+          </ol>
+          <h4>AI prompt template</h4>
+          <pre><code>You are creating a thought-leadership topic about AI governance and data governance.
+From the news item below, create ONE topic with a strong POV.
+
+Return ONLY valid JSON with keys:
+topic_title (max 12 words),
+topic_angle (2-3 sentences),
+why_now (1-2 sentences),
+source_urls (array),
+keywords (array of 5-8),
+dedup_key (lowercase hyphen slug).
+
+News title: {{news_title}}
+Summary: {{ai_summary}}
+URL: {{news_url}}
+Tags: {{topics_tags}}</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.3 ZAP C: Weekly Topic Suggestions (batch clustering, optional)</h3>
+          <p>
+            Trigger weekly, find top news, ask AI to propose 5 topics, and loop to create Topic
+            records (Proposed).
+          </p>
+        </article>
+
+        <article class="zap">
+          <h3>11.4 ZAP D: Topic Approved → Generate Draft Assets</h3>
+          <p><strong>Purpose:</strong> generate LinkedIn, Substack, and WordPress drafts plus reserve slots.</p>
+          <ol>
+            <li>Trigger: Updated Topics record where topic_status changes to Approved.</li>
+            <li>AI step: generate three drafts as strict JSON.</li>
+            <li>Code step: compute word counts + sha256 hashes.</li>
+            <li>Reserve earliest Available Calendar_Slots per channel.</li>
+            <li>Create 3 Content_Assets records with Draft status.</li>
+            <li>Optional: create Google Docs for each draft.</li>
+          </ol>
+          <h4>AI prompt template</h4>
+          <pre><code>Write three pieces of content for an enterprise audience.
+
+Constraints:
+1) LinkedIn post: 180-230 words. Practical, direct. End with 1 question.
+2) Substack: 700-900 words. Newsletter tone, 3-5 headers, checklist at end.
+3) WordPress (thesisstrategy.com): 1100-1500 words. SEO-friendly structure:
+   - TL;DR near top
+   - H2 headings with clear keywords
+   - One simple framework described in text
+   - Checklist at end
+Avoid duplication across versions. Do not reuse the same intro story.
+
+Topic title: {{topic_title}}
+Topic angle: {{topic_angle}}
+Why now: {{why_now}}
+Sources: {{source_urls}}
+Keywords: {{keywords}}
+
+Return ONLY valid JSON with keys:
+linkedin_title, linkedin_body,
+substack_title, substack_body_markdown,
+wordpress_title, wordpress_body_html, wordpress_excerpt, wordpress_slug</code></pre>
+          <h4>Code step (JavaScript) to parse JSON + compute counts/hashes</h4>
+          <pre><code>const crypto = require("crypto");
+
+function wc(text) {
+  return (text || "").trim().split(/\s+/).filter(Boolean).length;
+}
+function sha(text) {
+  return crypto.createHash("sha256").update(text || "", "utf8").digest("hex");
+}
+
+let obj = {};
+try { obj = JSON.parse(inputData.raw || "{}"); } catch (e) { obj = {}; }
+
+return {
+  linkedin_title: obj.linkedin_title || "",
+  linkedin_body: obj.linkedin_body || "",
+  linkedin_wc: wc(obj.linkedin_body || ""),
+  linkedin_hash: sha(obj.linkedin_body || ""),
+  substack_title: obj.substack_title || "",
+  substack_body: obj.substack_body_markdown || "",
+  substack_wc: wc(obj.substack_body_markdown || ""),
+  substack_hash: sha(obj.substack_body_markdown || ""),
+  wordpress_title: obj.wordpress_title || "",
+  wordpress_body: obj.wordpress_body_html || "",
+  wordpress_excerpt: obj.wordpress_excerpt || "",
+  wordpress_slug: obj.wordpress_slug || "",
+  wordpress_wc: wc(obj.wordpress_body_html || ""),
+  wordpress_hash: sha(obj.wordpress_body_html || "")
+};</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.5 ZAP E: Asset → Request Review (button)</h3>
+          <p>Move an asset from Draft to In Review and notify reviewers.</p>
+        </article>
+
+        <article class="zap">
+          <h3>11.6 ZAP F: Approval submission → Update Asset</h3>
+          <p>On Approval_Log record, update asset status and store comments.</p>
+        </article>
+
+        <article class="zap">
+          <h3>11.7 ZAP G: Dispatcher → Publish LinkedIn (auto)</h3>
+          <p>Schedule every 15 minutes, gate by Settings.publishing_enabled, post due LinkedIn slots.</p>
+          <h4>Code step to find due slots</h4>
+          <pre><code>// Input line items: scheduled_datetime[], slot_id[], asset_id[], slot_status[]
+const now = new Date();
+const times = inputData.scheduled_datetime || [];
+const slotIds = inputData.slot_id || [];
+const assetIds = inputData.asset_id || [];
+const statuses = inputData.slot_status || [];
+
+let due = [];
+for (let i = 0; i < times.length; i++) {
+  if (!times[i]) continue;
+  if (statuses[i] !== "Reserved") continue;
+  const t = new Date(times[i]);
+  if (t <= now && assetIds[i]) {
+    due.push({ slot_id: slotIds[i], asset_id: assetIds[i], scheduled_datetime: times[i] });
+  }
+}
+return { due };</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.8 ZAP H: WordPress Draft Upsert (Approved → Draft in WordPress)</h3>
+          <p>Trigger on Approved WordPress asset, gate by Settings.wordpress_enabled.</p>
+          <pre><code>POST https://thesisstrategy.com/wp-json/wp/v2/posts
+{
+  "title": "{{title}}",
+  "content": "{{body_html}}",
+  "excerpt": "{{wp_excerpt}}",
+  "slug": "{{wp_slug}}",
+  "status": "draft"
+}</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.9 ZAP I: Dispatcher → Publish WordPress (scheduled)</h3>
+          <p>Schedule every 15 minutes, gate by Settings.publishing_enabled and wordpress_enabled.</p>
+          <pre><code>POST https://thesisstrategy.com/wp-json/wp/v2/posts/{wp_post_id}
+{
+  "status": "publish"
+}</code></pre>
+        </article>
+
+        <article class="zap">
+          <h3>11.10 ZAP J: Substack publish assist (reminder)</h3>
+          <p>Schedule every 15 minutes, email/Slack due Substack drafts with title + body.</p>
+        </article>
+
+        <article class="zap">
+          <h3>11.11 ZAP K: Substack RSS verification (mark published)</h3>
+          <p>RSS trigger on Substack feed, update Content_Assets status and published URL.</p>
+        </article>
+      </section>
+
+      <section class="panel" id="images">
+        <div class="panel-heading">
+          <h2>12. Images (optional add-on)</h2>
+        </div>
+        <div class="split">
+          <div>
+            <h3>12.1 Simple approach (recommended first)</h3>
+            <ul>
+              <li>Pick a featured image in WordPress before publishing.</li>
+              <li>Publish LinkedIn as a link-share to the WordPress URL.</li>
+              <li>Insert the same image manually in Substack.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>12.2 Fully automated featured images (advanced)</h3>
+            <ul>
+              <li>Generate or download an image.</li>
+              <li>Upload via REST API: <code>POST /wp/v2/media</code>.</li>
+              <li>Set <code>featured_media</code> on the post.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="dedup">
+        <div class="panel-heading">
+          <h2>13. Avoid duplication (required guardrails)</h2>
+        </div>
+        <ul class="warning">
+          <li>Topic dedup_key is unique. If duplicate, archive the topic.</li>
+          <li>Content hash (sha256) blocks duplicate bodies before approval.</li>
+          <li>Optional: check WordPress slug before creating posts.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="go-live">
+        <div class="panel-heading">
+          <h2>14. Go-live checklist (Phase 5)</h2>
+        </div>
+        <ul class="checklist">
+          <li>Confirm Settings.publishing_enabled is OFF.</li>
+          <li>Run ZAP A with one RSS feed and confirm News_Inbox fills.</li>
+          <li>Confirm ZAP B creates at least one Proposed topic from high-signal news.</li>
+          <li>Approve a topic and confirm ZAP D creates 3 Content_Assets + reserves slots.</li>
+          <li>Run review end-to-end: submit_for_review → approval form → status Approved.</li>
+          <li>Approve a WordPress asset and confirm a DRAFT appears.</li>
+          <li>Schedule LinkedIn slot 10 minutes out, turn publishing_enabled ON, confirm publish.</li>
+          <li>Schedule WordPress slot 10 minutes out, confirm publish + URL write-back.</li>
+          <li>Publish Substack manually, confirm RSS verification marks Published.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="operating-rhythm">
+        <div class="panel-heading">
+          <h2>15. Operating rhythm (Phase 6)</h2>
+        </div>
+        <div class="split">
+          <div>
+            <h3>15.1 Daily (10–15 minutes)</h3>
+            <ul>
+              <li>Scan News_Inbox and fix obviously wrong scores/tags.</li>
+              <li>Star high-signal items for topics.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>15.2 Weekly (45 minutes)</h3>
+            <ul>
+              <li>Approve next week’s topics.</li>
+              <li>Review drafts and request changes.</li>
+              <li>Ensure one week of slots is reserved.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>15.3 After publishing (10 minutes)</h3>
+            <ul>
+              <li>Capture basic metrics (views, comments, saves, click-through).</li>
+              <li>Turn audience questions into follow-up topics.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="troubleshooting">
+        <div class="panel-heading">
+          <h2>16. Troubleshooting (common failure modes)</h2>
+        </div>
+        <h3>16.1 WordPress draft creation fails (401/403)</h3>
+        <ul>
+          <li>Re-run the curl test in section 7.4.</li>
+          <li>Check WAF/security plugin rules blocking wp-json or Basic Auth.</li>
+          <li>Confirm Application Passwords are used.</li>
+        </ul>
+        <h3>16.2 LinkedIn publishes but no URL returned</h3>
+        <p>Mark the asset Published anyway and paste the URL manually if needed.</p>
+        <h3>16.3 RSS feed ingestion fails</h3>
+        <ul>
+          <li>Some sites block bots. Try a different feed.</li>
+          <li>Use regulator/standards feeds for reliability.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="appendix-a">
+        <div class="panel-heading">
+          <h2>Appendix A. 30 RSS sources for AI and governance</h2>
+          <p>Start with the top 10. Then add more feeds as your pipeline proves stable.</p>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Source</th>
+                <th>Category</th>
+                <th>RSS URL</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>OpenAI News</td><td>Vendor announcements</td><td>https://openai.com/news/rss.xml</td><td>Official OpenAI newsroom feed.</td></tr>
+              <tr><td>2</td><td>AWS AI / Machine Learning Blog</td><td>Vendor blog</td><td>http://feeds.feedburner.com/amazon/AWSAI</td><td>AWS AI/ML blog via FeedBurner.</td></tr>
+              <tr><td>3</td><td>AWS Security Bulletins</td><td>Vendor security advisories</td><td>https://aws.amazon.com/security/security-bulletins/feed</td><td>AWS security bulletins feed.</td></tr>
+              <tr><td>4</td><td>Microsoft Security Response Center blog</td><td>Vendor security advisories</td><td>https://msrc-blog.microsoft.com/feed/</td><td>Legacy MSRC blog feed.</td></tr>
+              <tr><td>5</td><td>Microsoft Security Update Guide</td><td>Vendor security updates</td><td>https://api.msrc.microsoft.com/update-guide/rss</td><td>Machine-readable Patch Tuesday feed.</td></tr>
+              <tr><td>6</td><td>CISA Cybersecurity Advisories</td><td>Government advisories</td><td>https://www.cisa.gov/cybersecurity-advisories/all.xml</td><td>CISA all advisories feed.</td></tr>
+              <tr><td>7</td><td>US FTC Press Releases</td><td>US regulator</td><td>https://www.ftc.gov/feeds/press-release.xml</td><td>FTC press releases (privacy, AI).</td></tr>
+              <tr><td>8</td><td>NIST Cybersecurity News</td><td>US standards</td><td>https://www.nist.gov/news-events/cybersecurity/rss.xml</td><td>NIST cybersecurity news.</td></tr>
+              <tr><td>9</td><td>NIST Cybersecurity Insights Blog</td><td>US guidance</td><td>https://www.nist.gov/blogs/cybersecurity-insights/rss.xml</td><td>Practical implementation guidance.</td></tr>
+              <tr><td>10</td><td>European Commission Press Corner</td><td>EU policy</td><td>https://ec.europa.eu/commission/presscorner/api/rss/all/en</td><td>EU Commission releases.</td></tr>
+              <tr><td>11</td><td>EDPB News</td><td>EU privacy regulator</td><td>https://edpb.europa.eu/feed/news_en</td><td>Guidelines, opinions, enforcement.</td></tr>
+              <tr><td>12</td><td>EDPB Publications</td><td>EU privacy guidance</td><td>https://edpb.europa.eu/feed/publications_en</td><td>Opinions and guidelines.</td></tr>
+              <tr><td>13</td><td>CNIL (France) News</td><td>EU privacy regulator</td><td>https://www.cnil.fr/fr/rss.xml</td><td>Privacy + AI guidance.</td></tr>
+              <tr><td>14</td><td>GOV.UK Government Announcements</td><td>UK policy updates</td><td>https://www.gov.uk/government/announcements.atom</td><td>Policy + regulatory changes.</td></tr>
+              <tr><td>15</td><td>IAPP Daily Dashboard</td><td>Curated governance news</td><td>https://iapp.org/rss/daily-dashboard</td><td>Privacy and AI governance.</td></tr>
+              <tr><td>16</td><td>Lawfare: Cybersecurity & Tech</td><td>Policy + law analysis</td><td>https://www.lawfaremedia.org/feeds/cybersecurity-tech</td><td>Law/policy perspective.</td></tr>
+              <tr><td>17</td><td>Cloud Security Alliance</td><td>Frameworks + controls</td><td>https://cloudsecurityalliance.org/feed</td><td>CCM, STAR, AI controls.</td></tr>
+              <tr><td>18</td><td>Google Online Security Blog</td><td>Vendor security research</td><td>https://security.googleblog.com/feeds/posts/default?alt=rss</td><td>Google security blog feed.</td></tr>
+              <tr><td>19</td><td>SANS ISC Handler's Diary (Title)</td><td>Threat intel</td><td>https://isc.sans.edu/rssfeed.xml</td><td>Title-only feed.</td></tr>
+              <tr><td>20</td><td>SANS ISC Handler's Diary (Full)</td><td>Threat intel</td><td>https://isc.sans.edu/rssfeed_full.xml</td><td>Full-text feed.</td></tr>
+              <tr><td>21</td><td>The Hacker News</td><td>Security news</td><td>https://feeds.feedburner.com/TheHackersNews?format=xml</td><td>AI-related attacks and tooling.</td></tr>
+              <tr><td>22</td><td>BleepingComputer</td><td>Security + IT ops news</td><td>https://www.bleepingcomputer.com/feed/</td><td>Fast-moving vuln coverage.</td></tr>
+              <tr><td>23</td><td>Dark Reading</td><td>Enterprise security</td><td>https://www.darkreading.com/rss.xml</td><td>Enterprise risk + privacy.</td></tr>
+              <tr><td>24</td><td>The Register (Security)</td><td>Tech + security news</td><td>https://www.theregister.co.uk/security/headlines.atom</td><td>Security headlines atom feed.</td></tr>
+              <tr><td>25</td><td>Sophos News: Threat Research</td><td>Threat research</td><td>https://news.sophos.com/en-us/category/threat-research/feed/</td><td>Threat research posts.</td></tr>
+              <tr><td>26</td><td>Troy Hunt</td><td>Security commentary</td><td>https://www.troyhunt.com/rss/</td><td>Governance implications.</td></tr>
+              <tr><td>27</td><td>Help Net Security</td><td>Security news</td><td>https://www.helpnetsecurity.com/feed</td><td>Security news and research.</td></tr>
+              <tr><td>28</td><td>Heimdal Security Blog</td><td>Security blog</td><td>https://heimdalsecurity.com/blog/feed</td><td>Security research commentary.</td></tr>
+              <tr><td>29</td><td>arXiv: Artificial Intelligence (cs.AI)</td><td>Research papers</td><td>https://export.arxiv.org/rss/cs.AI</td><td>Daily arXiv AI feed.</td></tr>
+              <tr><td>30</td><td>arXiv: Cryptography & Security (cs.CR)</td><td>Research papers</td><td>https://export.arxiv.org/rss/cs.CR</td><td>AI security + watermarking.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tip">Tip: In Zapier, create one RSS ingestion Zap (ZAP A) per feed URL.</p>
+      </section>
+
+      <section class="panel" id="appendix-b">
+        <div class="panel-heading">
+          <h2>Appendix B. Prompt library</h2>
+        </div>
+        <h3>B1. News scoring prompt</h3>
+        <pre><code>Return ONLY valid JSON with keys: summary, tags, relevance_score.
+summary: max 2 sentences.
+tags: 3-6 short tags.
+relevance_score: integer 1-5 (5 = urgent enterprise governance impact).
+
+Title: {{title}}
+Snippet: {{content}}
+URL: {{link}}</code></pre>
+        <h3>B2. Real-time topic mining prompt</h3>
+        <pre><code>You are creating a thought-leadership topic about AI governance and data governance.
+From the news item below, create ONE topic with a strong POV.
+
+Return ONLY valid JSON with keys:
+topic_title (max 12 words),
+topic_angle (2-3 sentences),
+why_now (1-2 sentences),
+source_urls (array),
+keywords (array of 5-8),
+dedup_key (lowercase hyphen slug).
+
+News title: {{news_title}}
+Summary: {{ai_summary}}
+URL: {{news_url}}
+Tags: {{topics_tags}}</code></pre>
+        <h3>B3. Draft generation prompt (3 channels)</h3>
+        <pre><code>Write three pieces of content for an enterprise audience.
+
+Constraints:
+1) LinkedIn post: 180-230 words. Practical, direct. End with 1 question.
+2) Substack: 700-900 words. Newsletter tone, 3-5 headers, checklist at end.
+3) WordPress (thesisstrategy.com): 1100-1500 words. SEO-friendly structure:
+   - TL;DR near top
+   - H2 headings with clear keywords
+   - One simple framework described in text
+   - Checklist at end
+Avoid duplication across versions. Do not reuse the same intro story.
+
+Topic title: {{topic_title}}
+Topic angle: {{topic_angle}}
+Why now: {{why_now}}
+Sources: {{source_urls}}
+Keywords: {{keywords}}
+
+Return ONLY valid JSON with keys:
+linkedin_title, linkedin_body,
+substack_title, substack_body_markdown,
+wordpress_title, wordpress_body_html, wordpress_excerpt, wordpress_slug</code></pre>
+      </section>
+
+      <section class="panel" id="appendix-c">
+        <div class="panel-heading">
+          <h2>Appendix C. Code snippets (Zapier Code step)</h2>
+        </div>
+        <h3>C1. Parse JSON and compute hashes</h3>
+        <pre><code>const crypto = require("crypto");
+
+function wc(text) {
+  return (text || "").trim().split(/\s+/).filter(Boolean).length;
+}
+function sha(text) {
+  return crypto.createHash("sha256").update(text || "", "utf8").digest("hex");
+}
+
+let obj = {};
+try { obj = JSON.parse(inputData.raw || "{}"); } catch (e) { obj = {}; }
+
+return {
+  linkedin_wc: wc(obj.linkedin_body || ""),
+  linkedin_hash: sha(obj.linkedin_body || ""),
+  substack_wc: wc(obj.substack_body_markdown || ""),
+  substack_hash: sha(obj.substack_body_markdown || ""),
+  wordpress_wc: wc(obj.wordpress_body_html || ""),
+  wordpress_hash: sha(obj.wordpress_body_html || "")
+};</code></pre>
+        <h3>C2. Find due slots from line items</h3>
+        <pre><code>// Input line items: scheduled_datetime[], slot_id[], asset_id[], slot_status[]
+const now = new Date();
+const times = inputData.scheduled_datetime || [];
+const slotIds = inputData.slot_id || [];
+const assetIds = inputData.asset_id || [];
+const statuses = inputData.slot_status || [];
+
+let due = [];
+for (let i = 0; i < times.length; i++) {
+  if (!times[i]) continue;
+  if (statuses[i] !== "Reserved") continue;
+  const t = new Date(times[i]);
+  if (t <= now && assetIds[i]) {
+    due.push({ slot_id: slotIds[i], asset_id: assetIds[i], scheduled_datetime: times[i] });
+  }
+}
+return { due };</code></pre>
+      </section>
+
+      <section class="panel" id="references">
+        <div class="panel-heading">
+          <h2>References</h2>
+        </div>
+        <ul class="references">
+          <li>Zapier Webhooks by Zapier: <a href="https://help.zapier.com/hc/en-us/articles/8496083355661-How-to-get-started-with-Webhooks-by-Zapier">How to get started</a></li>
+          <li>Zapier Tables Button field triggers: <a href="https://help.zapier.com/hc/en-us/articles/15720961080717-Use-the-Button-field-in-Zapier-Tables">Use the Button field</a></li>
+          <li>Zapier Code steps with JavaScript: <a href="https://help.zapier.com/hc/en-us/articles/8496310939021-Use-JavaScript-code-in-Zaps">Use JavaScript code in Zaps</a></li>
+          <li>WordPress REST API: <a href="https://developer.wordpress.org/rest-api/reference/posts/">Posts endpoint reference</a></li>
+          <li>WordPress Application Passwords: <a href="https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/">Integration guide</a></li>
+        </ul>
       </section>
     </main>
 
     <footer>
-      <div>
-        <h3>SpinBite POC</h3>
-        <p>Web-first experience built to transition cleanly to iPhone.</p>
-      </div>
-      <div class="footer-note">
-        <p>Tip: Save to your phone home screen for an app-like feel.</p>
-      </div>
+      <p>AI + Data Governance Content Engine · Build guide for thesisstrategy.com</p>
+      <p>Keep Settings.publishing_enabled off until end-to-end tests pass.</p>
     </footer>
-
-    <script src="app.js"></script>
   </body>
 </html>
