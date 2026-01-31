@@ -1,350 +1,365 @@
-const wheelCanvas = document.getElementById("wheel");
-const spinNowButton = document.getElementById("spinNow");
-const locateButton = document.getElementById("locateMe");
-const restaurantList = document.getElementById("restaurantList");
-const resultName = document.getElementById("resultName");
-const resultMeta = document.getElementById("resultMeta");
-const profileForm = document.getElementById("profileForm");
-const partnerForm = document.getElementById("partnerForm");
-const partnerStatus = document.getElementById("partnerStatus");
-const sampleProfileButton = document.getElementById("sampleProfile");
-const fetchRestaurantsButton = document.getElementById("fetchRestaurants");
-const restaurantStatus = document.getElementById("restaurantStatus");
+const fileInput = document.getElementById("fileInput");
+const fileName = document.getElementById("fileName");
+const rowCount = document.getElementById("rowCount");
+const columnCount = document.getElementById("columnCount");
+const previewTable = document.getElementById("previewTable");
+const previewWrapper = document.getElementById("previewWrapper");
+const mappingTable = document.getElementById("mappingTable");
+const mappingWrapper = document.getElementById("mappingWrapper");
+const dedupeKey = document.getElementById("dedupeKey");
+const autoMapButton = document.getElementById("autoMap");
+const approvalCheck = document.getElementById("approvalCheck");
+const ingestButton = document.getElementById("ingestButton");
+const progressBar = document.getElementById("progressBar");
+const ingestStatus = document.getElementById("ingestStatus");
+const databaseTable = document.getElementById("databaseTable");
+const newCount = document.getElementById("newCount");
+const duplicateCount = document.getElementById("duplicateCount");
+const lastImportSummary = document.getElementById("lastImportSummary");
+const dbCount = document.getElementById("dbCount");
+const lastImport = document.getElementById("lastImport");
+const startNewButton = document.getElementById("startNew");
+const viewDocsButton = document.getElementById("viewDocs");
 
-let restaurantPool = [
-  {
-    name: "Pho & Flow",
-    cuisine: "Vietnamese",
-    tags: ["noodles", "gluten-free"],
-    budget: "$$",
-  },
-  {
-    name: "Green Harbor",
-    cuisine: "Mediterranean",
-    tags: ["vegan", "salads"],
-    budget: "$$",
-  },
-  {
-    name: "Sushi Static",
-    cuisine: "Japanese",
-    tags: ["sushi"],
-    budget: "$$$",
-  },
-  {
-    name: "Taco Tempo",
-    cuisine: "Mexican",
-    tags: ["tacos", "spicy"],
-    budget: "$",
-  },
-  {
-    name: "Harvest Table",
-    cuisine: "American",
-    tags: ["comfort", "vegetarian"],
-    budget: "$$",
-  },
-  {
-    name: "Curry Cloud",
-    cuisine: "Indian",
-    tags: ["curry", "vegan"],
-    budget: "$$",
-  },
+const schema = [
+  { key: "id", label: "Customer ID", type: "text" },
+  { key: "full_name", label: "Full name", type: "text" },
+  { key: "email", label: "Email", type: "text" },
+  { key: "phone", label: "Phone", type: "text" },
+  { key: "company", label: "Company", type: "text" },
+  { key: "status", label: "Status", type: "text" },
+  { key: "signup_date", label: "Signup date", type: "date" },
+  { key: "source_file", label: "Source file", type: "text" },
 ];
+const typeOptions = ["text", "number", "date", "boolean"];
 
-let profile = JSON.parse(localStorage.getItem("spinbite-profile")) || {
-  displayName: "",
-  diet: "omnivore",
-  budget: "$$",
-  cuisines: "",
-  timeWindow: "now",
-  location: "",
-  zipCode: "",
-};
-let partner = JSON.parse(localStorage.getItem("spinbite-partner")) || null;
-let lastSpinner = localStorage.getItem("spinbite-last-spinner") || null;
+let parsedData = [];
+let columns = [];
+let mapping = [];
+let database = JSON.parse(localStorage.getItem("dataharbor-db")) || [];
 
-const wheelState = {
-  segments: restaurantPool.map((item) => item.name),
-  angle: 0,
-  spinning: false,
-};
-const pointerAngle = -Math.PI / 2;
-
-function drawWheel() {
-  const ctx = wheelCanvas.getContext("2d");
-  const radius = wheelCanvas.width / 2;
-  ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-  const colors = ["#ede9fe", "#c7d2fe", "#fbcfe8", "#bbf7d0", "#fed7aa", "#bae6fd"];
-
-  wheelState.segments.forEach((segment, index) => {
-    const startAngle =
-      pointerAngle + wheelState.angle + (index * 2 * Math.PI) / wheelState.segments.length;
-    const endAngle = startAngle + (2 * Math.PI) / wheelState.segments.length;
-    ctx.beginPath();
-    ctx.moveTo(radius, radius);
-    ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
-    ctx.fillStyle = colors[index % colors.length];
-    ctx.fill();
-    ctx.save();
-    ctx.translate(radius, radius);
-    ctx.rotate(startAngle + (endAngle - startAngle) / 2);
-    ctx.textAlign = "right";
-    ctx.fillStyle = "#1e293b";
-    ctx.font = "bold 14px Inter";
-    ctx.fillText(segment, radius - 25, 5);
-    ctx.restore();
-  });
-}
-
-function getSelectedIndex() {
-  const segmentAngle = (2 * Math.PI) / wheelState.segments.length;
-  const totalRotation = wheelState.angle % (2 * Math.PI);
-  const adjusted = (2 * Math.PI + pointerAngle - totalRotation) % (2 * Math.PI);
-  return Math.floor(adjusted / segmentAngle) % wheelState.segments.length;
-}
-
-function updateProfileForm() {
-  Object.entries(profile).forEach(([key, value]) => {
-    const field = profileForm.elements[key];
-    if (field) {
-      field.value = value;
-    }
-  });
-}
-
-function saveProfile() {
-  localStorage.setItem("spinbite-profile", JSON.stringify(profile));
-}
-
-function updatePartnerStatus() {
-  if (!partner) {
-    partnerStatus.textContent = "No partner linked yet.";
-    return;
+const updateDatabaseMetrics = () => {
+  dbCount.textContent = database.length.toString();
+  if (database.length) {
+    const last = database[database.length - 1];
+    lastImport.textContent = `Last import: ${last.source_file || "Manual"}`;
   }
-  const spinnerLine = lastSpinner
-    ? `Last spin by ${lastSpinner}. Next spin: ${lastSpinner === profile.displayName ? partner.name : profile.displayName || "you"}.`
-    : "No spins yet. Start the first spin!";
-  partnerStatus.textContent = `${partner.name} linked (${partner.email}). ${spinnerLine}`;
-}
+};
 
-function buildRestaurantList(restaurants) {
-  restaurantList.innerHTML = "";
-  restaurants.forEach((restaurant) => {
-    const card = document.createElement("div");
-    card.className = "restaurant-card";
-    card.innerHTML = `
-      <h4>${restaurant.name}</h4>
-      <p class="restaurant-meta">${restaurant.cuisine} • ${restaurant.distance} mi • ${restaurant.available}</p>
-      <p class="restaurant-meta">Budget ${restaurant.budget} • Match: ${restaurant.matchScore}%</p>
-    `;
-    restaurantList.appendChild(card);
+const resetProgress = () => {
+  progressBar.style.width = "0%";
+  ingestStatus.textContent = "Awaiting approval.";
+};
+
+const normalizeHeader = (value) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+const parseCsv = (text) => {
+  const rows = text
+    .split(/\r?\n/)
+    .map((row) => row.trim())
+    .filter(Boolean);
+  if (!rows.length) return { headers: [], records: [] };
+  const headers = rows[0].split(",").map((header) => header.replace(/^"|"$/g, "").trim());
+  const records = rows.slice(1).map((row) => {
+    const values = row.split(",");
+    return headers.reduce((acc, header, index) => {
+      acc[header] = (values[index] || "").replace(/^"|"$/g, "").trim();
+      return acc;
+    }, {});
   });
-}
+  return { headers, records };
+};
 
-function scoreRestaurants() {
-  const cuisines = profile.cuisines.toLowerCase().split(",").map((item) => item.trim());
-  if (restaurantPool.length === 0) {
-    restaurantStatus.textContent = "No restaurants loaded yet. Try another zip code.";
-    return [];
-  }
-  restaurantStatus.textContent = `Showing ${restaurantPool.length} nearby restaurants.`;
-  return restaurantPool.map((restaurant) => {
-    const cuisineMatch = cuisines.some((cuisine) => cuisine && restaurant.cuisine.toLowerCase().includes(cuisine));
-    const dietMatch = restaurant.tags.includes(profile.diet) || profile.diet === "omnivore";
-    const budgetMatch = profile.budget === restaurant.budget;
-    const matchScore =
-      (cuisineMatch ? 40 : 0) +
-      (dietMatch ? 35 : 0) +
-      (budgetMatch ? 25 : 0) +
-      Math.floor(Math.random() * 10);
+const parseWorkbook = async (file) => {
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: "array" });
+  const firstSheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[firstSheetName];
+  const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+  const headers = json.length ? Object.keys(json[0]) : [];
+  return { headers, records: json };
+};
+
+const renderPreview = () => {
+  previewWrapper.style.display = columns.length ? "block" : "none";
+  previewTable.innerHTML = "";
+  if (!columns.length) return;
+
+  const headerRow = document.createElement("tr");
+  columns.forEach((col) => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    headerRow.appendChild(th);
+  });
+  previewTable.appendChild(headerRow);
+
+  parsedData.slice(0, 5).forEach((row) => {
+    const tr = document.createElement("tr");
+    columns.forEach((col) => {
+      const td = document.createElement("td");
+      td.textContent = row[col] ?? "";
+      tr.appendChild(td);
+    });
+    previewTable.appendChild(tr);
+  });
+};
+
+const renderMappingTable = () => {
+  mappingWrapper.style.display = columns.length ? "block" : "none";
+  mappingTable.innerHTML = "";
+  if (!columns.length) return;
+
+  const header = document.createElement("tr");
+  ["Source column", "Sample", "Database field", "Data type"].forEach((label) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    header.appendChild(th);
+  });
+  mappingTable.appendChild(header);
+
+  mapping = columns.map((column) => {
+    const sample = parsedData[0]?.[column] ?? "";
     return {
-      ...restaurant,
-      matchScore,
-      distance: (Math.random() * 3 + 0.4).toFixed(1),
-      available: profile.timeWindow === "now" ? "Immediate seating" : `Ready in ${profile.timeWindow} min`,
+      column,
+      sample,
+      field: "ignore",
+      type: "text",
     };
   });
-}
 
-function refreshRestaurants() {
-  const restaurants = scoreRestaurants().sort((a, b) => b.matchScore - a.matchScore);
-  wheelState.segments = restaurants.map((restaurant) => restaurant.name);
-  buildRestaurantList(restaurants);
-  drawWheel();
-}
+  mapping.forEach((mapItem) => {
+    const tr = document.createElement("tr");
+    const colCell = document.createElement("td");
+    colCell.textContent = mapItem.column;
 
-async function loadRestaurantsByZip() {
-  const zipCode = profile.zipCode.trim();
-  if (!zipCode) {
-    restaurantStatus.textContent = "Enter a zip code to find nearby restaurants.";
+    const sampleCell = document.createElement("td");
+    sampleCell.textContent = mapItem.sample;
+
+    const fieldCell = document.createElement("td");
+    const fieldSelect = document.createElement("select");
+    const ignoreOption = document.createElement("option");
+    ignoreOption.value = "ignore";
+    ignoreOption.textContent = "Ignore";
+    fieldSelect.appendChild(ignoreOption);
+    schema.forEach((field) => {
+      const option = document.createElement("option");
+      option.value = field.key;
+      option.textContent = `${field.label} (${field.key})`;
+      fieldSelect.appendChild(option);
+    });
+    fieldSelect.addEventListener("change", (event) => {
+      mapItem.field = event.target.value;
+    });
+    fieldCell.appendChild(fieldSelect);
+
+    const typeCell = document.createElement("td");
+    const typeSelect = document.createElement("select");
+    typeOptions.forEach((type) => {
+      const option = document.createElement("option");
+      option.value = type;
+      option.textContent = type;
+      typeSelect.appendChild(option);
+    });
+    typeSelect.addEventListener("change", (event) => {
+      mapItem.type = event.target.value;
+    });
+    typeCell.appendChild(typeSelect);
+
+    tr.appendChild(colCell);
+    tr.appendChild(sampleCell);
+    tr.appendChild(fieldCell);
+    tr.appendChild(typeCell);
+    mappingTable.appendChild(tr);
+  });
+
+  dedupeKey.innerHTML = "";
+  schema.forEach((field) => {
+    const option = document.createElement("option");
+    option.value = field.key;
+    option.textContent = `${field.label} (${field.key})`;
+    dedupeKey.appendChild(option);
+  });
+  dedupeKey.value = "email";
+};
+
+const autoMapColumns = () => {
+  const normalized = schema.reduce((acc, field) => {
+    acc[field.key] = field.key;
+    acc[field.label.toLowerCase().replace(/\s+/g, "_")] = field.key;
+    return acc;
+  }, {});
+
+  Array.from(mappingTable.querySelectorAll("tr")).slice(1).forEach((row, index) => {
+    const mapItem = mapping[index];
+    const norm = normalizeHeader(mapItem.column);
+    const match = normalized[norm];
+    if (match) {
+      const select = row.querySelector("select");
+      select.value = match;
+      mapItem.field = match;
+      const schemaMatch = schema.find((item) => item.key === match);
+      if (schemaMatch) {
+        const typeSelect = row.querySelectorAll("select")[1];
+        typeSelect.value = schemaMatch.type;
+        mapItem.type = schemaMatch.type;
+      }
+    }
+  });
+};
+
+const castValue = (value, type) => {
+  if (type === "number") {
+    const num = Number(value);
+    return Number.isNaN(num) ? null : num;
+  }
+  if (type === "date") {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);
+  }
+  if (type === "boolean") {
+    return ["true", "yes", "1"].includes(String(value).toLowerCase());
+  }
+  return value ?? "";
+};
+
+const renderDatabaseTable = () => {
+  databaseTable.innerHTML = "";
+  const headerRow = document.createElement("tr");
+  schema.forEach((field) => {
+    const th = document.createElement("th");
+    th.textContent = field.label;
+    headerRow.appendChild(th);
+  });
+  databaseTable.appendChild(headerRow);
+
+  const recent = database.slice(-6).reverse();
+  recent.forEach((record) => {
+    const tr = document.createElement("tr");
+    schema.forEach((field) => {
+      const td = document.createElement("td");
+      td.textContent = record[field.key] ?? "";
+      tr.appendChild(td);
+    });
+    databaseTable.appendChild(tr);
+  });
+};
+
+const ingestData = () => {
+  if (!parsedData.length) {
+    ingestStatus.textContent = "Upload a file to ingest.";
     return;
   }
-  restaurantStatus.textContent = "Looking up your area...";
-  try {
-    const geoResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&postalcode=${encodeURIComponent(zipCode)}&countrycodes=us&limit=1`,
-      {
-        headers: { "Accept-Language": "en" },
-      }
-    );
-    if (!geoResponse.ok) {
-      throw new Error("Unable to look up that zip code.");
-    }
-    const geoResults = await geoResponse.json();
-    if (!geoResults.length) {
-      throw new Error("No location found for that zip code.");
-    }
-    const { lat, lon, display_name: displayName } = geoResults[0];
-    profile.location = displayName;
-    profileForm.elements.location.value = displayName;
-    saveProfile();
-    restaurantStatus.textContent = "Fetching nearby restaurants...";
+  const dedupeField = dedupeKey.value;
+  const dedupeSet = new Set(database.map((record) => record[dedupeField]));
+  const mappedFields = mapping.filter((item) => item.field !== "ignore");
 
-    const overpassQuery = `
-      [out:json][timeout:25];
-      (
-        node["amenity"="restaurant"](around:3000,${lat},${lon});
-        way["amenity"="restaurant"](around:3000,${lat},${lon});
-        relation["amenity"="restaurant"](around:3000,${lat},${lon});
-      );
-      out center 25;
-    `;
-    const overpassResponse = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      body: overpassQuery,
-    });
-    if (!overpassResponse.ok) {
-      throw new Error("Restaurant lookup failed. Try again in a moment.");
-    }
-    const overpassData = await overpassResponse.json();
-    restaurantPool = (overpassData.elements || [])
-      .map((element) => {
-        const name = element.tags?.name;
-        if (!name) return null;
-        const cuisine = element.tags?.cuisine
-          ? element.tags.cuisine.split(";")[0].replaceAll("_", " ")
-          : "Local";
-        return {
-          name,
-          cuisine: cuisine.charAt(0).toUpperCase() + cuisine.slice(1),
-          tags: element.tags?.diet?.split(";") ?? [],
-          budget: "$$",
-        };
-      })
-      .filter(Boolean)
-      .slice(0, 12);
+  let added = 0;
+  let skipped = 0;
+  const total = parsedData.length;
+  let current = 0;
 
-    if (restaurantPool.length === 0) {
-      restaurantStatus.textContent = "No restaurants found nearby. Try another zip code.";
-      refreshRestaurants();
+  ingestStatus.textContent = "Ingesting records...";
+  progressBar.style.width = "0%";
+
+  const interval = setInterval(() => {
+    const row = parsedData[current];
+    if (!row) {
+      clearInterval(interval);
+      localStorage.setItem("dataharbor-db", JSON.stringify(database));
+      newCount.textContent = added.toString();
+      duplicateCount.textContent = skipped.toString();
+      const summary = `${added} new, ${skipped} duplicates`;
+      lastImportSummary.textContent = summary;
+      ingestStatus.textContent = `Ingestion complete: ${summary}.`;
+      updateDatabaseMetrics();
+      renderDatabaseTable();
       return;
     }
-    refreshRestaurants();
-  } catch (error) {
-    restaurantStatus.textContent = error.message;
-  }
-}
 
-function spinWheel() {
-  if (wheelState.spinning) return;
-  wheelState.spinning = true;
-  const spinAngle = Math.random() * 10 + 15;
-  const start = performance.now();
-  const duration = 2400;
+    const record = {};
+    mappedFields.forEach((item) => {
+      record[item.field] = castValue(row[item.column], item.type);
+    });
+    record.source_file = fileName.textContent;
 
-  function animate(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const easeOut = 1 - Math.pow(1 - progress, 3);
-    wheelState.angle = spinAngle * easeOut;
-    drawWheel();
-    if (progress < 1) {
-      requestAnimationFrame(animate);
+    const dedupeValue = record[dedupeField];
+    if (dedupeValue && dedupeSet.has(dedupeValue)) {
+      skipped += 1;
     } else {
-      wheelState.spinning = false;
-      announceResult();
+      database.push(record);
+      if (dedupeValue) {
+        dedupeSet.add(dedupeValue);
+      }
+      added += 1;
     }
-  }
-  requestAnimationFrame(animate);
-}
 
-function announceResult() {
-  const selection = wheelState.segments[getSelectedIndex()];
-  resultName.textContent = selection;
-  const picked = restaurantPool.find((restaurant) => restaurant.name === selection);
-  resultMeta.textContent = picked
-    ? `${picked.cuisine} • Budget ${picked.budget}`
-    : "Spin again for a better match.";
+    current += 1;
+    const progress = Math.min((current / total) * 100, 100);
+    progressBar.style.width = `${progress}%`;
+  }, 120);
+};
 
-  if (profile.displayName) {
-    lastSpinner = profile.displayName;
-    localStorage.setItem("spinbite-last-spinner", lastSpinner);
-  }
-  updatePartnerStatus();
-}
+fileInput.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  fileName.textContent = file.name;
+  resetProgress();
 
-profileForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  profile = Object.fromEntries(new FormData(profileForm).entries());
-  saveProfile();
-  refreshRestaurants();
-  updatePartnerStatus();
-});
-
-partnerForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const data = Object.fromEntries(new FormData(partnerForm).entries());
-  partner = { name: data.partnerName, email: data.partnerEmail };
-  localStorage.setItem("spinbite-partner", JSON.stringify(partner));
-  updatePartnerStatus();
-  partnerForm.reset();
-});
-
-sampleProfileButton.addEventListener("click", () => {
-  profile = {
-    displayName: "Jamie",
-    diet: "omnivore",
-    budget: "$$",
-    cuisines: "Sushi, Tacos, Mediterranean",
-    timeWindow: "now",
-    location: "Downtown",
-    zipCode: "",
-  };
-  updateProfileForm();
-  saveProfile();
-  refreshRestaurants();
-  updatePartnerStatus();
-});
-
-fetchRestaurantsButton.addEventListener("click", () => {
-  profile = Object.fromEntries(new FormData(profileForm).entries());
-  saveProfile();
-  loadRestaurantsByZip();
-});
-
-locateButton.addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    resultMeta.textContent = "Geolocation not supported in this browser.";
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      profile.location = `Lat ${position.coords.latitude.toFixed(2)}, Lng ${position.coords.longitude.toFixed(2)}`;
-      profileForm.elements.location.value = profile.location;
-      saveProfile();
-    },
-    () => {
-      resultMeta.textContent = "Unable to access location. Please type it in.";
+  try {
+    let result;
+    if (file.name.endsWith(".csv")) {
+      const text = await file.text();
+      result = parseCsv(text);
+    } else {
+      result = await parseWorkbook(file);
     }
-  );
+    columns = result.headers;
+    parsedData = result.records;
+    rowCount.textContent = parsedData.length.toString();
+    columnCount.textContent = columns.length.toString();
+    renderPreview();
+    renderMappingTable();
+  } catch (error) {
+    ingestStatus.textContent = "Unable to read that file. Please try again.";
+  }
 });
 
-spinNowButton.addEventListener("click", () => {
-  spinWheel();
+approvalCheck.addEventListener("change", (event) => {
+  ingestButton.disabled = !event.target.checked;
 });
 
-drawWheel();
-updateProfileForm();
-if (profile.displayName) {
-  refreshRestaurants();
-}
-updatePartnerStatus();
+ingestButton.addEventListener("click", () => {
+  ingestData();
+});
+
+autoMapButton.addEventListener("click", () => {
+  autoMapColumns();
+});
+
+startNewButton.addEventListener("click", () => {
+  fileInput.value = "";
+  fileName.textContent = "No file selected";
+  rowCount.textContent = "0";
+  columnCount.textContent = "0";
+  parsedData = [];
+  columns = [];
+  mapping = [];
+  previewTable.innerHTML = "";
+  mappingTable.innerHTML = "";
+  previewWrapper.style.display = "none";
+  mappingWrapper.style.display = "none";
+  approvalCheck.checked = false;
+  ingestButton.disabled = true;
+  resetProgress();
+});
+
+viewDocsButton.addEventListener("click", () => {
+  document.getElementById("documentation").scrollIntoView({ behavior: "smooth" });
+});
+
+updateDatabaseMetrics();
+renderDatabaseTable();

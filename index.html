@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SpinBite - Decide Where to Eat</title>
+    <title>Data Harbor - Upload & Map</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,136 +11,188 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   </head>
   <body>
     <header class="hero">
       <div class="hero-content">
-        <p class="pill">Stress-free meal decisions</p>
-        <h1>SpinBite</h1>
+        <p class="pill">CSV/XLS Intake Studio</p>
+        <h1>Data Harbor</h1>
         <p class="hero-subtitle">
-          A playful roulette wheel that matches your cravings and nearby options so
-          you can eat fast and worry less.
+          Upload spreadsheets, map columns to database fields, and ingest without duplicates.
         </p>
         <div class="hero-actions">
-          <button class="primary" id="spinNow">Spin now</button>
-          <button class="ghost" id="locateMe">Use my location</button>
+          <button class="primary" id="startNew">Start new import</button>
+          <button class="ghost" id="viewDocs">View documentation</button>
         </div>
       </div>
       <div class="hero-card">
-        <div class="wheel-wrapper">
-          <canvas id="wheel" width="320" height="320" aria-label="Roulette wheel"></canvas>
-          <div class="wheel-pointer"></div>
-        </div>
-        <div class="spin-result">
-          <h3 id="resultName">Ready to spin?</h3>
-          <p id="resultMeta">Your match appears here.</p>
+        <h3>Import checklist</h3>
+        <ul class="checklist">
+          <li>Upload CSV or Excel</li>
+          <li>Confirm field + data type mapping</li>
+          <li>Approve ingestion to database</li>
+        </ul>
+        <div class="status-card">
+          <p class="status-label">Database records</p>
+          <p class="status-value" id="dbCount">0</p>
+          <p class="status-meta" id="lastImport">No imports yet</p>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="panel quick-start">
-        <div class="panel-heading">
-          <h2>Quick start</h2>
-          <p>Follow these two steps to see the roulette and matches update.</p>
-        </div>
-        <ol class="steps">
-          <li>Fill out your profile and tap <strong>Save profile</strong>.</li>
-          <li>Hit <strong>Spin now</strong> to pick a restaurant.</li>
-        </ol>
-      </section>
-
       <section class="panel">
         <div class="panel-heading">
-          <h2>Profile &amp; Preferences</h2>
-          <p>Set your tastes so SpinBite knows what to look for.</p>
+          <h2>1) Upload your file</h2>
+          <p>Supports .csv, .xls, and .xlsx. We’ll generate a preview automatically.</p>
         </div>
-        <form id="profileForm" class="grid">
-          <label>
-            Display name
-            <input type="text" name="displayName" placeholder="e.g. Jordan" required />
+        <div class="upload-grid">
+          <label class="upload-card">
+            <input type="file" id="fileInput" accept=".csv,.xls,.xlsx" />
+            <div>
+              <h3>Drop or browse</h3>
+              <p>Max 20MB. Your file stays in the browser for this demo.</p>
+            </div>
           </label>
-          <label>
-            Dietary preference
-            <select name="diet">
-              <option value="omnivore">Omnivore</option>
-              <option value="vegetarian">Vegetarian</option>
-              <option value="vegan">Vegan</option>
-              <option value="gluten-free">Gluten free</option>
-            </select>
-          </label>
-          <label>
-            Budget
-            <select name="budget">
-              <option value="$">$</option>
-              <option value="$$">$$</option>
-              <option value="$$$">$$$</option>
-            </select>
-          </label>
-          <label>
-            Cuisine cravings
-            <input type="text" name="cuisines" placeholder="Tacos, Sushi, Mediterranean" />
-          </label>
-          <label>
-            Time window
-            <select name="timeWindow">
-              <option value="now">Available now</option>
-              <option value="30">Within 30 minutes</option>
-              <option value="60">Within an hour</option>
-            </select>
-          </label>
-          <label>
-            Location
-            <input type="text" name="location" placeholder="Neighborhood or city" />
-          </label>
-          <label>
-            Zip code
-            <input type="text" name="zipCode" placeholder="e.g. 94103" inputmode="numeric" />
-          </label>
-          <div class="form-actions full">
-            <button type="submit" class="primary">Save profile</button>
-            <button type="button" class="ghost" id="sampleProfile">Use sample profile</button>
-            <button type="button" class="ghost" id="fetchRestaurants">Find nearby restaurants</button>
+          <div class="upload-summary">
+            <div>
+              <p class="summary-label">File</p>
+              <p class="summary-value" id="fileName">No file selected</p>
+            </div>
+            <div>
+              <p class="summary-label">Rows detected</p>
+              <p class="summary-value" id="rowCount">0</p>
+            </div>
+            <div>
+              <p class="summary-label">Columns detected</p>
+              <p class="summary-value" id="columnCount">0</p>
+            </div>
           </div>
-        </form>
+        </div>
+        <div class="preview" id="previewWrapper">
+          <h3>Preview</h3>
+          <div class="table-wrapper">
+            <table id="previewTable"></table>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
         <div class="panel-heading">
-          <h2>Link Partner Profiles</h2>
-          <p>Stay fair by tracking who spun last and take turns.</p>
+          <h2>2) Map columns to database</h2>
+          <p>Assign each source column to a destination field and confirm data types.</p>
         </div>
-        <form id="partnerForm" class="grid two">
-          <label>
-            Partner name
-            <input type="text" name="partnerName" placeholder="Alex" required />
-          </label>
-          <label>
-            Partner email
-            <input type="email" name="partnerEmail" placeholder="alex@email.com" required />
-          </label>
-          <button type="submit" class="ghost full">Link partner</button>
-        </form>
-        <div class="partner-status" id="partnerStatus"></div>
+        <div class="mapping" id="mappingWrapper">
+          <div class="mapping-header">
+            <p class="mapping-note">
+              Database schema: CustomerMaster (id, full_name, email, phone, company,
+              status, signup_date, source_file)
+            </p>
+            <div class="mapping-actions">
+              <label>
+                De-duplication key
+                <select id="dedupeKey"></select>
+              </label>
+              <button class="ghost" id="autoMap">Auto-map columns</button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table id="mappingTable"></table>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
         <div class="panel-heading">
-          <h2>Nearby Restaurants (Immediate Availability)</h2>
-          <p>Based on your preferences and location.</p>
+          <h2>3) Approve & ingest</h2>
+          <p>Confirm the mapping and ingest the data into the database.</p>
         </div>
-        <p class="restaurant-status" id="restaurantStatus">Use a zip code to load real nearby restaurants.</p>
-        <div class="restaurant-list" id="restaurantList"></div>
+        <div class="ingest">
+          <div class="ingest-controls">
+            <label class="approval">
+              <input type="checkbox" id="approvalCheck" />
+              I approve this mapping and confirm ingestion.
+            </label>
+            <button class="primary" id="ingestButton" disabled>Ingest data</button>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="ingest-status" id="ingestStatus">Awaiting approval.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Database results</h2>
+          <p>Recent records and duplicate protection summary.</p>
+        </div>
+        <div class="results-grid">
+          <div class="result-card">
+            <p class="summary-label">New records</p>
+            <p class="summary-value" id="newCount">0</p>
+          </div>
+          <div class="result-card">
+            <p class="summary-label">Duplicates skipped</p>
+            <p class="summary-value" id="duplicateCount">0</p>
+          </div>
+          <div class="result-card">
+            <p class="summary-label">Last import</p>
+            <p class="summary-value" id="lastImportSummary">None</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="databaseTable"></table>
+        </div>
+      </section>
+
+      <section class="panel" id="documentation">
+        <div class="panel-heading">
+          <h2>Documentation</h2>
+          <p>This component is the foundation of the larger ingestion platform.</p>
+        </div>
+        <div class="doc-grid">
+          <div>
+            <h3>Workflow</h3>
+            <ol>
+              <li>Upload a CSV or Excel file.</li>
+              <li>Review the preview and map each column.</li>
+              <li>Approve mapping and ingest data.</li>
+            </ol>
+          </div>
+          <div>
+            <h3>De-duplication</h3>
+            <p>
+              Select a unique key (email, id, or phone). Existing records with the
+              same key are skipped.
+            </p>
+          </div>
+          <div>
+            <h3>Data types</h3>
+            <p>
+              Each mapped field supports common data types (text, number, date, boolean)
+              to prepare downstream validation rules.
+            </p>
+          </div>
+          <div>
+            <h3>Next steps</h3>
+            <p>
+              Connect this component to an API endpoint, add authentication, and
+              persist records in a real database.
+            </p>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer>
       <div>
-        <h3>SpinBite POC</h3>
-        <p>Web-first experience built to transition cleanly to iPhone.</p>
+        <h3>Data Harbor</h3>
+        <p>Web-based ingestion UI for CSV/XLS workflows.</p>
       </div>
       <div class="footer-note">
-        <p>Tip: Save to your phone home screen for an app-like feel.</p>
+        <p>Built for quick validation before full backend integration.</p>
       </div>
     </footer>
 
